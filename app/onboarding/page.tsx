@@ -5,73 +5,37 @@ import { useRouter } from 'next/navigation';
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const handleStartJustNow = () => {
-    router.push('/fahrplan');
-  };
-
-  const handleAlreadyStarted = () => {
-    router.push('/fahrplan');
-  };
-
-  const handleConcreteTopic = () => {
-    router.push('/fahrplan');
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8 md:p-12">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Willkommen zu deiner Bachelorarbeit
-          </h1>
-          <p className="text-lg text-gray-600">
-            Wir begleiten dich Schritt für Schritt durch den Prozess.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-cyan-50 to-blue-50">
+      <header className="border-b bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+          <button onClick={() => router.push('/')} className="text-sm font-semibold text-slate-600 transition hover:text-cyan-700">← Zurück</button>
+          <h1 className="text-xl font-bold text-slate-900">Onboarding</h1>
+          <div className="w-16" />
+        </div>
+      </header>
+
+      <main className="mx-auto flex max-w-3xl flex-col items-center px-4 py-16 text-center">
+        <span className="mb-4 rounded-full bg-cyan-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-800">Start</span>
+        <h2 className="text-3xl font-black tracking-tight text-slate-900 md:text-5xl">Willkommen in deiner Lernapp</h2>
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700">Hier lernst du versicherungsrelevante Themen strukturiert und praxisnah – mit klarem Fahrplan und interaktiven Modulen.</p>
+
+        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <button onClick={() => router.push('/fahrplan')} className="rounded-xl bg-cyan-700 px-7 py-4 font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-200">Zum Fahrplan</button>
+          <button onClick={() => router.push('/')} className="rounded-xl border border-slate-300 bg-white px-7 py-4 font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200">Zur Startseite</button>
         </div>
 
-        <div className="space-y-4">
-          <button
-            onClick={handleStartJustNow}
-            className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            <div className="text-left">
-              <div className="font-medium text-lg">Ich starte gerade</div>
-              <div className="text-indigo-200 text-sm mt-1">
-                Du hast gerade begonnen oder stehst noch am Anfang
-              </div>
-            </div>
-          </button>
-
-          <button
-            onClick={handleAlreadyStarted}
-            className="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-          >
-            <div className="text-left">
-              <div className="font-medium text-lg">Ich habe bereits begonnen</div>
-              <div className="text-emerald-200 text-sm mt-1">
-                Du bist schon mittendrin und brauchst Unterstützung
-              </div>
-            </div>
-          </button>
-
-          <button
-            onClick={handleConcreteTopic}
-            className="w-full py-4 px-6 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
-          >
-            <div className="text-left">
-              <div className="font-medium text-lg">Ich will ein konkretes Thema lernen</div>
-              <div className="text-amber-200 text-sm mt-1">
-                Du möchtest gezielt ein bestimmtes Thema bearbeiten
-              </div>
-            </div>
-          </button>
-        </div>
-
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Alle Optionen führen zunächst zum Bachelor-Fahrplan.</p>
-          <p className="mt-1">Es werden keine Zugangsdaten, API-Keys oder Originalunterlagen gespeichert.</p>
-        </div>
-      </div>
+        <section className="mt-12 w-full text-left">
+          <div className="rounded-2xl bg-white p-6 shadow-lg">
+            <h3 className="font-bold text-slate-900">So funktioniert's</h3>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+              <li>• Der Fahrplan zeigt alle Themen und deinen Fortschritt.</li>
+              <li>• Lernmodule enthalten Kapitel, Fallbeispiele und Quizze.</li>
+              <li>• Dein Fortschritt wird automatisch im Browser gespeichert.</li>
+            </ul>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
