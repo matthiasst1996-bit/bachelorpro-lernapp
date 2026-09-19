@@ -1,0 +1,11 @@
+﻿Vers.-Zweig,"Fahrlässigkeit, Böswilligkeit (B)",Material- und Konstruktionsfehler (C),Unfälle (Einwirkung von außen) (D),außerbetriebliche Transportunfälle (E),"Feuer, Blitz, Explosion (F)","Überschw. d. Oberflächen-/Grundwasser, Witterung (G)",Hochwasser durch Gewässer (H),Sturm (I),Frost (J),Erdbeben (K),sonstige höhere Gewalt (L),"Streik, Aussperrung (M)",Diebstahl (N),Innere Unruhen (O),"Kernenergie, Krieg (P)"
+AMB,v (nA §2/4),v (§2/1b),v (§2/1),A (§1/1 u. §4),A (§2/3),A (§2/f),A (§2/g),v (§2/1h),v (§2/1h),A (§2/4e),A (§2/4e),v (nA §2/4),A (§4 k),A (§2/4c),A (§2/4b)
+ABMG,v (nA §2/4),v (§2/1b),v (§2/1),v (§4),A (§2/3),A (§2/f),A (§2/g),v (§2/1h),v (§2/1h),A (§2/4e),A (§2/4e),v (nA §2/4),z (§2/3a),A (§2/4c),A (§2/4b)
+ABMG mit Kl 3252,A (TK 3252),A (TK 3252),v,v (§4),z (TK 3210),A,A,v,v,A,A,A,z (§2/3a),A,A
+AMoB,v (nA §2/4),v (§2/1b),v (§2/1),v,z (§2/2a),z (§2/2b),A (§2/4g),v (§2/1h),v (§2/1h),A (§2/4e),A (§2/4e),v (nA §2/4),z (§2/3),A (§2/4c),A (§2/4b)
+Maschinen Garantie,A,v,A,A,A,A,A,A,A,A,A,A,A,A,A
+ABN,v (nA §2/4),v (§2/1),v (§2/1),A,z (§2/2a),z (§2/2b),A (§2/4g),v (§2/1h),v (§2/1h),A (§2/4e),A (§2/4e),A (§2/4h),A (§2/4),A (§2/4c),A (§2/4b)
+ABU,v (nA §2/4),v (§2/1),v (§2/1),A,z (§2/2a),z (§2/2b),A (§2/4g),v (§2/1h),v (§2/1h),A (§2/4e),A (§2/4e),A (§2/4h),A (§2/4),A (§2/4c),A (§2/4b)
+AMBUB,v,v,v,v,A,A,A,v,v,A,A,v,A,A,A
+ABE,v (nA §2/4),v (§2/1b),v (§2/1),v (§4),v (§2/1d),A (§2/4f),A (§2/4f),v,v,A (§2/4e),A (§2/4e),v (nA §2/4),v (§2/1),A (§2/4c),A (§2/4d)
+ABBV *,v,v,v,v,v,z,A,v,v,A,A,v,v,A,A
