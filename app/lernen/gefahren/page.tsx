@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { perilLessons, perilCaseStudy, perilQuiz } from '@/content/gefahren';
 
 const PROGRESS_KEY = 'bachelorpro-gefahren-completed-lessons';
@@ -11,6 +11,24 @@ export default function GefahrenPage() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Answers>({});
   const [submitted, setSubmitted] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(PROGRESS_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) setCompletedLessons(parsed);
+      } catch {
+        localStorage.removeItem(PROGRESS_KEY);
+      }
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) localStorage.setItem(PROGRESS_KEY, JSON.stringify(completedLessons));
+  }, [completedLessons, loaded]);
 
   const score = useMemo(
     () => perilQuiz.filter((q) => answers[q.id] === q.correctIndex).length,
@@ -77,7 +95,7 @@ export default function GefahrenPage() {
                       : 'bg-indigo-700 text-white hover:bg-indigo-800 focus:ring-indigo-200'
                   }`}
                 >
-                  {isComplete ? 'Erledigt ✓' : 'Kapitel abschlieÃ¿en'}
+                  {isComplete ? 'Erledigt ✓' : 'Kapitel abschließen'}
                 </button>
               </div>
             );
@@ -102,7 +120,7 @@ export default function GefahrenPage() {
             </ol>
           </div>
           <div>
-            <h4 className="font-medium">MusterlÃ¶sung:</h4>
+            <h4 className="font-medium">Musterlösung:</h4>
             <p className="text-gray-700">{perilCaseStudy.solution}</p>
           </div>
         </div>
