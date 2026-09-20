@@ -3,14 +3,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { perilLessons, perilCaseStudy, perilQuiz } from '@/content/gefahren';
 
-const PROGRESS_KEY = 'bachelorpro-gefahren-completed-lessons';
+const PROGRESS_KEY = 'bachelorpro-gefahren-progress';
 
-type Answers = Record<string, number>;
+type ModuleProgress = {
+  completedLessons: string[];
+  quizAnswers: Record<string, number>;
+  quizSubmitted: boolean;
+};
 
 export default function GefahrenPage() {
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<Answers>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [progress, setProgress] = useState<ModuleProgress>({ completedLessons: [], quizAnswers: {}, quizSubmitted: false });
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -18,7 +20,13 @@ export default function GefahrenPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) setCompletedLessons(parsed);
+        if (typeof parsed === 'object' && parsed !== null) {
+          setProgress({
+            completedLessons: Array.isArray(parsed.completedLessons) ? parsed.completedLessons : [],
+            quizAnswers: typeof parsed.quizAnswers === 'object' && parsed.quizAnswers !== null ? parsed.quizAnswers : {},
+            quizSubmitted: typeof parsed.quizSubmitted === 'boolean' ? parsed.quizSubmitted : false,
+          });
+        }
       } catch {
         localStorage.removeItem(PROGRESS_KEY);
       }
@@ -27,19 +35,22 @@ export default function GefahrenPage() {
   }, []);
 
   useEffect(() => {
-    if (loaded) localStorage.setItem(PROGRESS_KEY, JSON.stringify(completedLessons));
-  }, [completedLessons, loaded]);
+    if (loaded) localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  }, [progress, loaded]);
 
   const score = useMemo(
-    () => perilQuiz.filter((q) => answers[q.id] === q.correctIndex).length,
-    [answers]
+    () => perilQuiz.filter((q) => progress.quizAnswers[q.id] === q.correctIndex).length,
+    [progress.quizAnswers]
   );
 
   const markComplete = (lessonId: string) => {
-    setCompletedLessons((current) =>
-      current.includes(lessonId) ? current : [...current, lessonId]
-    );
+    setProgress((p) => ({
+      ...p,
+      completedLessons: p.completedLessons.includes(lessonId) ? p.completedLessons : [...p.completedLessons, lessonId],
+    }));
   };
+
+  const isLessonComplete = (lessonId: string) => progress.completedLessons.includes(lessonId);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -52,7 +63,7 @@ export default function GefahrenPage() {
         <h2 className="text-2xl font-semibold mb-4">Lektionen</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {perilLessons.map((lesson) => {
-            const isComplete = completedLessons.includes(lesson.id);
+            const isComplete = isLessonComplete(lesson.id);
             return (
               <div key={lesson.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-2">
@@ -136,9 +147,9 @@ export default function GefahrenPage() {
               </legend>
               <div className="mt-4 space-y-3">
                 {q.options.map((option, oIndex) => {
-                  const selected = answers[q.id] === oIndex;
+                  const selected = progress.quizAnswers[q.id] === oIndex;
                   const correct = q.correctIndex === oIndex;
-                  const state = submitted
+                  const state = progress.quizSubmitted
                     ? correct
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-950'
                       : selected
@@ -156,9 +167,9 @@ export default function GefahrenPage() {
                         type="radio"
                         name={q.id}
                         checked={selected}
-                        disabled={submitted}
+                        disabled={progress.quizSubmitted}
                         onChange={() =>
-                          setAnswers((current) => ({ ...current, [q.id]: oIndex }))
+                          setProgress((p) => ({ ...p, quizAnswers: { ...p.quizAnswers, [q.id]: oIndex } }))
                         }
                         className="mt-1 h-4 w-4 accent-indigo-700"
                       />
@@ -167,7 +178,7 @@ export default function GefahrenPage() {
                   );
                 })}
               </div>
-              {submitted && (
+              {progress.quizSubmitted && (
                 <p className="mt-4 text-sm leading-6 text-slate-600">
                   <span className="font-bold">Einordnung:</span> {q.explanation}
                 </p>
@@ -175,10 +186,10 @@ export default function GefahrenPage() {
             </fieldset>
           ))}
         </div>
-        {!submitted ? (
+        {!progress.quizSubmitted ? (
           <button
-            onClick={() => setSubmitted(true)}
-            disabled={Object.keys(answers).length !== perilQuiz.length}
+            onClick={() => setProgress((p) => ({ ...p, quizSubmitted: true }))}
+            disabled={Object.keys(progress.quizAnswers).length !== perilQuiz.length}
             className="mt-7 rounded-xl bg-violet-600 px-5 py-3 font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             Antworten auswerten
@@ -189,10 +200,7 @@ export default function GefahrenPage() {
               {score}/{perilQuiz.length} richtig
             </span>
             <button
-              onClick={() => {
-                setAnswers({});
-                setSubmitted(false);
-              }}
+              onClick={() => setProgress((p) => ({ ...p, quizAnswers: {}, quizSubmitted: false }))}
               className="rounded-xl border border-violet-300 px-5 py-3 font-bold text-violet-700 transition hover:bg-violet-50"
             >
               Quiz erneut starten
