@@ -1,6 +1,28 @@
+'use client';
+
+import { useMemo, useState } from 'react';
 import { perilLessons, perilCaseStudy, perilQuiz } from '@/content/gefahren';
 
+const PROGRESS_KEY = 'bachelorpro-gefahren-completed-lessons';
+
+type Answers = Record<string, number>;
+
 export default function GefahrenPage() {
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Answers>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const score = useMemo(
+    () => perilQuiz.filter((q) => answers[q.id] === q.correctIndex).length,
+    [answers]
+  );
+
+  const markComplete = (lessonId: string) => {
+    setCompletedLessons((current) =>
+      current.includes(lessonId) ? current : [...current, lessonId]
+    );
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <header className="mb-8">
@@ -11,42 +33,55 @@ export default function GefahrenPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-4">Lektionen</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          {perilLessons.map((lesson) => (
-            <div key={lesson.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold text-lg">{lesson.title}</h3>
-                <span className="text-sm text-gray-500">{lesson.duration}</span>
-              </div>
-              <p className="text-gray-700 mb-3">{lesson.summary}</p>
-              <div className="mb-3">
-                <h4 className="font-medium text-sm mb-1">Lernziele:</h4>
-                <ul className="list-disc list-inside text-sm text-gray-600">
-                  {lesson.learningGoals.map((goal, i) => (
-                    <li key={i}>{goal}</li>
+          {perilLessons.map((lesson) => {
+            const isComplete = completedLessons.includes(lesson.id);
+            return (
+              <div key={lesson.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-semibold text-lg">{lesson.title}</h3>
+                  <span className="text-sm text-gray-500">{lesson.duration}</span>
+                </div>
+                <p className="text-gray-700 mb-3">{lesson.summary}</p>
+                <div className="mb-3">
+                  <h4 className="font-medium text-sm mb-1">Lernziele:</h4>
+                  <ul className="list-disc list-inside text-sm text-gray-600">
+                    {lesson.learningGoals.map((goal, i) => (
+                      <li key={i}>{goal}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  {lesson.sections.map((section, i) => (
+                    <div key={i} className="mb-3">
+                      <h4 className="font-medium text-sm">{section.heading}</h4>
+                      <p className="text-gray-700 text-sm">{section.body}</p>
+                      {section.bullets && (
+                        <ul className="list-disc list-inside text-sm text-gray-600 mt-1">
+                          {section.bullets.map((bullet, j) => (
+                            <li key={j}>{bullet}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   ))}
-                </ul>
+                </div>
+                <div className="mt-3 p-2 bg-blue-50 rounded">
+                  <p className="text-sm font-medium text-blue-800">Key Takeaway:</p>
+                  <p className="text-sm text-blue-700">{lesson.keyTakeaway}</p>
+                </div>
+                <button
+                  onClick={() => markComplete(lesson.id)}
+                  className={`mt-4 w-full rounded-xl px-4 py-2 font-bold transition focus:outline-none focus:ring-4 ${
+                    isComplete
+                      ? 'bg-emerald-100 text-emerald-800 focus:ring-emerald-200'
+                      : 'bg-indigo-700 text-white hover:bg-indigo-800 focus:ring-indigo-200'
+                  }`}
+                >
+                  {isComplete ? 'Erledigt ✓' : 'Kapitel abschlieÃ¿en'}
+                </button>
               </div>
-              <div>
-                {lesson.sections.map((section, i) => (
-                  <div key={i} className="mb-3">
-                    <h4 className="font-medium text-sm">{section.heading}</h4>
-                    <p className="text-gray-700 text-sm">{section.body}</p>
-                    {section.bullets && (
-                      <ul className="list-disc list-inside text-sm text-gray-600 mt-1">
-                        {section.bullets.map((bullet, j) => (
-                          <li key={j}>{bullet}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3 p-2 bg-blue-50 rounded">
-                <p className="text-sm font-medium text-blue-800">Key Takeaway:</p>
-                <p className="text-sm text-blue-700">{lesson.keyTakeaway}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -76,35 +111,76 @@ export default function GefahrenPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-4">Quiz</h2>
         <div className="space-y-6">
-          {perilQuiz.map((q) => (
-            <div key={q.id} className="border rounded-lg p-4">
-              <p className="font-medium mb-3">{q.question}</p>
-              <div className="space-y-2">
-                {q.options.map((option, i) => (
-                  <div
-                    key={i}
-                    className={`p-2 rounded border ${
-                      i === q.correctIndex ? 'bg-green-50 border-green-300' : 'bg-white'
-                    }`}
-                  >
-                    <label className="flex items-center gap-2 cursor-pointer">
+          {perilQuiz.map((q, qIndex) => (
+            <fieldset key={q.id} className="rounded-xl border border-slate-200 p-5">
+              <legend className="px-1 font-bold text-slate-900">
+                {qIndex + 1}. {q.question}
+              </legend>
+              <div className="mt-4 space-y-3">
+                {q.options.map((option, oIndex) => {
+                  const selected = answers[q.id] === oIndex;
+                  const correct = q.correctIndex === oIndex;
+                  const state = submitted
+                    ? correct
+                      ? 'border-emerald-300 bg-emerald-50 text-emerald-950'
+                      : selected
+                      ? 'border-rose-300 bg-rose-50 text-rose-950'
+                      : 'border-slate-200 bg-white text-slate-700'
+                    : selected
+                    ? 'border-indigo-400 bg-indigo-50 text-indigo-950'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-indigo-200';
+                  return (
+                    <label
+                      key={option}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition ${state}`}
+                    >
                       <input
                         type="radio"
                         name={q.id}
-                        className="accent-blue-600"
+                        checked={selected}
+                        disabled={submitted}
+                        onChange={() =>
+                          setAnswers((current) => ({ ...current, [q.id]: oIndex }))
+                        }
+                        className="mt-1 h-4 w-4 accent-indigo-700"
                       />
-                      <span>{option}</span>
+                      <span className="text-sm leading-6">{option}</span>
                     </label>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-              <details className="mt-3">
-                <summary className="text-sm text-blue-600 cursor-pointer font-medium">ErklÃ¤rung anzeigen</summary>
-                <p className="text-sm text-gray-700 mt-2">{q.explanation}</p>
-              </details>
-            </div>
+              {submitted && (
+                <p className="mt-4 text-sm leading-6 text-slate-600">
+                  <span className="font-bold">Einordnung:</span> {q.explanation}
+                </p>
+              )}
+            </fieldset>
           ))}
         </div>
+        {!submitted ? (
+          <button
+            onClick={() => setSubmitted(true)}
+            disabled={Object.keys(answers).length !== perilQuiz.length}
+            className="mt-7 rounded-xl bg-violet-600 px-5 py-3 font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+          >
+            Antworten auswerten
+          </button>
+        ) : (
+          <div className="mt-7 flex items-center gap-4">
+            <span className="rounded-full bg-violet-100 px-3 py-1 text-sm font-bold text-violet-800">
+              {score}/{perilQuiz.length} richtig
+            </span>
+            <button
+              onClick={() => {
+                setAnswers({});
+                setSubmitted(false);
+              }}
+              className="rounded-xl border border-violet-300 px-5 py-3 font-bold text-violet-700 transition hover:bg-violet-50"
+            >
+              Quiz erneut starten
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
